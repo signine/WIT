@@ -1,13 +1,14 @@
 from time import time
 import flickr as flkr
 import simplejson as json
+import sys
 
 STORAGE_DIR = "flickr_photos/"
 # Min 250 per page. Should be multiple of 250.
 OBJS_PER_FILE = 1000
 DELIMITER = "\n"
 
-PAGES = { 'start': 22, 'finish': 40 }
+PAGES = { 'start': int(sys.argv[1]), 'finish': int(sys.argv[2]) }
 
 API = flkr.Photo()
 
