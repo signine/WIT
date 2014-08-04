@@ -1,0 +1,1 @@
+from flickr.photo import Photo
