@@ -1,13 +1,13 @@
-from urllib import request, parse
-from os import path
-from sys import argv
 from hashlib import md5
 from time import sleep
-from capstone import settings
+import os, sys
 import simplejson as json
+import urllib2, urllib
+
+sys.path.append(os.path.dirname(__file__))
+import settings
 
 URL = "http://maps.googleapis.com/maps/api/streetview?%s"
-OUTPUT_DIR = "C:\/Users\/shamil\/Desktop\/capstone\/crawler"
 FORMAT = ".jpg"
 DEFAULTS = {'size': '800x600', 'fov': 80, 'key': settings.GOOGLE_API_KEY, 'userIP': settings.USER_IP}
 # Seconds to sleep between api call
@@ -17,13 +17,15 @@ DELAY = 0.5
 IMG_POSITIONS = ((0, 0), (45, 0), (90, 0), (135, 0), (180, 0), (225, 0), (270, 0), (315, 0), (0, 40), (90, 40), (180, 40), (270, 40))
 IDENTITY_POSITION = (0, 0)
 
+output_dir = ''
+
 def snap(lat, lng, heading, pitch, **kwargs):
   params = DEFAULTS.copy()
   params.update({'location': "%s,%s"%(lat, lng), 'heading': heading, 'pitch': pitch})
   params.update(kwargs)
-  encoded = parse.urlencode(params)
+  encoded = urllib.urlencode(params)
   try:
-    return request.urlopen(URL % encoded).read()
+    return urllib2.urlopen(URL % encoded).read()
   except Exception as e:
     print(URL % encoded)
     raise e
@@ -40,17 +42,19 @@ def fetch_images(streetname, coordinate_id, lat, lng):
 def save_image(img, name):
   name = name + FORMAT
   print("Saving image: ", name)
-  with open(path.join(OUTPUT_DIR, name), 'wb') as file:
+  with open(os.path.join(output_dir, name), 'wb') as file:
     file.write(img)
   
   
 
 def main():
-  street_name = argv[1]
-  coordinates_file = argv[2]
+  global output_dir
+  street_name = sys.argv[1]
+  coordinates_file = sys.argv[2]
+  output_dir = sys.argv[3]
   
   if not street_name or not coordinates_file:
-    print("Usage: python streetview_crawler.py <street name> <coordinates file>")
+    print("Usage: python streetview_crawler.py <street name> <coordinates file> <output dir>")
     return
   
   with open(coordinates_file, 'r') as file:
