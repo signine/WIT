@@ -1,0 +1,12 @@
+CREATE TABLE images (
+  id INT NOT NULL AUTO_INCREMENT,
+  lat DOUBLE NOT NULL,
+  lng DOUBLE NOT NULL,
+  street_name VARCHAR(100) NOT NULL,
+  step_id SMALLINT NOT NULL,
+  heading SMALLINT NOT NULL,
+  pitch SMALLINT NOT NULL,
+  date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  INDEX coordinates (lat, lng)
+) ENGINE = InnoDB;
