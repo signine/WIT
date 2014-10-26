@@ -1,5 +1,7 @@
 from hashlib import md5
 from time import sleep
+from sqlalchemy import create_engine
+from sqlalchemy.sql import text
 import os, sys
 import simplejson as json
 import urllib2, urllib
@@ -7,6 +9,7 @@ import urllib2, urllib
 sys.path.append(os.path.dirname(__file__))
 import settings
 
+DB_URL = "mysql://root@localhost:3306/WIT"
 URL = "http://maps.googleapis.com/maps/api/streetview?%s"
 FORMAT = ".jpg"
 DEFAULTS = {'size': '800x600', 'fov': 80, 'key': settings.GOOGLE_API_KEY, 'userIP': settings.USER_IP}
@@ -17,7 +20,10 @@ DELAY = 0.5
 IMG_POSITIONS = ((0, 0), (45, 0), (90, 0), (135, 0), (180, 0), (225, 0), (270, 0), (315, 0), (0, 40), (90, 40), (180, 40), (270, 40))
 IDENTITY_POSITION = (0, 0)
 
+INSERT_SQL = text("INSERT INTO images (lat, lng, street_name, step_id, heading, pitch) VALUES (:lat, :lng, :street_name, :step_id, :heading, :pitch);")
+
 output_dir = ''
+db = None 
 
 def snap(lat, lng, heading, pitch, **kwargs):
   params = DEFAULTS.copy()
@@ -31,20 +37,26 @@ def snap(lat, lng, heading, pitch, **kwargs):
     raise e
   
 
-def fetch_images(streetname, coordinate_id, lat, lng):
+def fetch_images(street_name, step_id, lat, lng):
   for heading, pitch in IMG_POSITIONS:
-    name = "%s_%s_%i_%i"%(streetname, coordinate_id, heading, pitch)
     img = snap(lat, lng, heading, pitch)
-    save_image(img, name)
+    save_image(img, lat, lng, street_name, step_id, heading, pitch)
     sleep(DELAY)
+
+def get_db_connection():
+  global db
+  db = create_engine(DB_URL)
  
- 
-def save_image(img, name):
-  name = name + FORMAT
+def save_image(img, lat, lng, street_name, step_id, heading, pitch):
+  if not db:
+    get_db_connection()
+
+  result = db.execute(INSERT_SQL, lat=lat, lng=lng, street_name=street_name, step_id=step_id, heading=heading, pitch=pitch)
+
+  name = "%i_%s_%s_%i_%i%s"%(result.lastrowid, street_name, step_id, heading, pitch, FORMAT)
   print("Saving image: ", name)
   with open(os.path.join(output_dir, name), 'wb') as file:
     file.write(img)
-  
   
 
 def main():
