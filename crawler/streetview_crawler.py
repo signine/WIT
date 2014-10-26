@@ -65,7 +65,7 @@ def main():
   coordinates_file = sys.argv[2]
   output_dir = sys.argv[3]
   
-  if not street_name or not coordinates_file:
+  if not street_name or not coordinates_file or not output_dir:
     print("Usage: python streetview_crawler.py <street name> <coordinates file> <output dir>")
     return
   
