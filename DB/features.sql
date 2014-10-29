@@ -5,6 +5,7 @@ CREATE TABLE features (
   y DOUBLE NOT NULL,
   size DOUBLE NOT NULL,
   angle DOUBLE NOT NULL,
+  descriptor TEXT NOT NULL,
   PRIMARY KEY (id),
   FOREIGN KEY (image_id) REFERENCES images (id) 
     ON DELETE CASCADE 
