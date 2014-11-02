@@ -9,7 +9,7 @@ def main():
 	try:
 		cnx = mysql.connector.connect(user='root', password='piesek',
 								  host='127.0.0.1',
-								  database='test')
+								  database='test', buffered=True)
 	except mysql.connector.Error as err:
 		if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
 			print("Something is wrong with your user name or password")
@@ -19,7 +19,13 @@ def main():
 			print(err)
 	else:	
 		cursor = cnx.cursor()
+		
+		query = ("SELECT MAX(id) FROM features")
+		cursor.execute(query)
 		i = 0
+		for max in cursor:
+			i = max[0]
+			print(i)
 		for filename in os.listdir(os.getcwd()):
 			if filename.endswith((".jpg")):
 				img = cv2.imread(filename)
@@ -39,7 +45,7 @@ def main():
 					"VALUES (%s, %s, %s, %s, %s, %s, %s)" %(i+j+1, imageid[0], keypoint.pt[0], keypoint.pt[1], keypoint.size, keypoint.angle, json.dumps(str(des[j]))) )
 					cursor.execute(insert_string)
 					j=j+1
-				i=j
+				i=i+j
 	cnx.commit()
 	cursor.close()			
 	cnx.close()
