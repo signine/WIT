@@ -1,6 +1,7 @@
 CREATE TABLE features (
   id INT NOT NULL AUTO_INCREMENT,
   image_id INT NOT NULL,
+  algorithm VARCHAR(15) NOT NULL,
   x DOUBLE NOT NULL,
   y DOUBLE NOT NULL,
   size DOUBLE NOT NULL,
