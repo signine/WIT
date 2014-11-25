@@ -82,17 +82,16 @@ def main():
   flann = cv2.FlannBasedMatcher(index_params, search_params) 
 
   # query des, train des
-  matches = flann.knnMatch(des2, des1, k=1)
+  matches = flann.knnMatch(des2, des1, k=2)
   print "Total matches: ", len(matches)
 
   # ratio test 
-  # for i,(m,n) in enumerate(matches):
-  #     if m.distance < 0.9*n.distance:
-  #       best_matches.append(matches[i])
+  for i,(m,n) in enumerate(matches):
+    if m.distance < 0.7*n.distance:
+      best_matches.append(matches[i])
 
-
-  matches = sorted(matches, key=lambda x: x[0].distance)
-  best_matches = [ m[0] for m in matches if m[0].distance < DISTANCE_LIMIT][:MATCHES_NUM]
+  best_matches = sorted(best_matches, key=lambda x: x[0].distance)
+  best_matches = [ m[0] for m in best_matches if m[0].distance < DISTANCE_LIMIT][:MATCHES_NUM]
 
   print "Good mathces: ", len(best_matches)
   
