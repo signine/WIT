@@ -89,9 +89,10 @@ def main():
   for i,(m,n) in enumerate(matches):
     if m.distance < 0.7*n.distance:
       best_matches.append(matches[i])
-
-  best_matches = sorted(best_matches, key=lambda x: x[0].distance)
+      
+  # Filter by distance
   best_matches = [ m[0] for m in best_matches if m[0].distance < DISTANCE_LIMIT][:MATCHES_NUM]
+  best_matches = sorted(best_matches, key=lambda x: x[0].distance)
 
   print "Good mathces: ", len(best_matches)
   
