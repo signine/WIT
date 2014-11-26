@@ -4,7 +4,12 @@ import sys
 
 FEATURE_DETECTOR = "MSER"
 FEATURE_DESCRIPTOR = "SIFT"
-MATCHES_NUM = 50
+
+MATCHES_NUM = 100 
+USE_MATCH_RANGE = True 
+RANGE_START = 0 
+RANGE_END = 100
+
 DISTANCE_LIMIT = 200 
 RATIO_TEST = False 
 
@@ -59,13 +64,14 @@ def main():
   # img1 = train, img2 = query
   #img1 = cv2.imread("1_college_1_0_0.jpg")
   #img2 = cv2.imread("9_college_1_0_40.jpg")
-  #img1 = cv2.imread("109_college_10_0_0.jpg")
+  img1 = cv2.imread("109_college_10_0_0.jpg")
   #img1 = cv2.imread("104_college_9_315_0.jpg")
+  img2 = cv2.imread("IMG_20141125_140931.jpg")
   #img2 = cv2.imread("116_college_10_315_0.jpg")
 
 
-  img1 = cv2.imread("98_college_9_45_0.jpg")
-  img2 = cv2.imread("IMG_20141125_163036.jpg")
+  #img1 = cv2.imread("98_college_9_45_0.jpg")
+  #img2 = cv2.imread("IMG_20141125_163036.jpg")
 
   gray1 = cv2.cvtColor(img1, cv2.COLOR_BGR2GRAY)
   gray2 = cv2.cvtColor(img2, cv2.COLOR_BGR2GRAY)
@@ -73,12 +79,12 @@ def main():
   detector = cv2.FeatureDetector_create(FEATURE_DETECTOR)
   descriptor = cv2.DescriptorExtractor_create(FEATURE_DESCRIPTOR)
 
-  kp1 = detector.detect(img1)
-  kp1, des1 = descriptor.compute(img1, kp1)
+  kp1 = detector.detect(gray1)
+  kp1, des1 = descriptor.compute(gray1, kp1)
   print "Img1 features: ", len(des1)
 
-  kp2 = detector.detect(img2)
-  kp2, des2 = descriptor.compute(img2, kp2)
+  kp2 = detector.detect(gray2)
+  kp2, des2 = descriptor.compute(gray2, kp2)
   print "Img2 features: ", len(des2)
 
   # FLANN parameters
@@ -95,6 +101,13 @@ def main():
   matches = flann.knnMatch(des2, des1, k=knn)
   print "Total matches: ", len(matches)
 
+  if USE_MATCH_RANGE:
+    start = RANGE_START
+    end = RANGE_END
+  else:
+    start = 0
+    end = MATCHES_NUM
+
   if RATIO_TEST:
     # ratio test 
     for i,(m,n) in enumerate(matches):
@@ -102,9 +115,9 @@ def main():
         best_matches.append(matches[i])
       
     # Filter by distance
-    best_matches = [ m[0] for m in best_matches if m[0].distance < DISTANCE_LIMIT][:MATCHES_NUM]
+    best_matches = [ m[0] for m in best_matches if m[0].distance < DISTANCE_LIMIT][start:end]
   else:
-    best_matches = [ m[0] for m in matches if m[0].distance < DISTANCE_LIMIT][:MATCHES_NUM]
+    best_matches = [ m[0] for m in matches if m[0].distance < DISTANCE_LIMIT][start:end]
 
   best_matches = sorted(best_matches, key=lambda x: x.distance)
 
