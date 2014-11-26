@@ -4,8 +4,9 @@ import sys
 
 FEATURE_DETECTOR = "MSER"
 FEATURE_DESCRIPTOR = "SIFT"
-MATCHES_NUM = 100
-DISTANCE_LIMIT = 100
+MATCHES_NUM = 50
+DISTANCE_LIMIT = 200 
+RATIO_TEST = False 
 
 best_matches= []
 
@@ -58,9 +59,14 @@ def main():
   # img1 = train, img2 = query
   #img1 = cv2.imread("1_college_1_0_0.jpg")
   #img2 = cv2.imread("9_college_1_0_40.jpg")
-  img1 = cv2.imread("109_college_10_0_0.jpg")
+  #img1 = cv2.imread("109_college_10_0_0.jpg")
   #img1 = cv2.imread("104_college_9_315_0.jpg")
-  img2 = cv2.imread("116_college_10_315_0.jpg")
+  #img2 = cv2.imread("116_college_10_315_0.jpg")
+
+
+  img1 = cv2.imread("98_college_9_45_0.jpg")
+  img2 = cv2.imread("IMG_20141125_163036.jpg")
+
   gray1 = cv2.cvtColor(img1, cv2.COLOR_BGR2GRAY)
   gray2 = cv2.cvtColor(img2, cv2.COLOR_BGR2GRAY)
 
@@ -81,17 +87,25 @@ def main():
   search_params = dict(checks=50)   # or pass empty dictionary
   flann = cv2.FlannBasedMatcher(index_params, search_params) 
 
+  if RATIO_TEST:
+    knn = 2
+  else:
+    knn = 1
   # query des, train des
-  matches = flann.knnMatch(des2, des1, k=2)
+  matches = flann.knnMatch(des2, des1, k=knn)
   print "Total matches: ", len(matches)
 
-  # ratio test 
-  for i,(m,n) in enumerate(matches):
-    if m.distance < 0.7*n.distance:
-      best_matches.append(matches[i])
+  if RATIO_TEST:
+    # ratio test 
+    for i,(m,n) in enumerate(matches):
+      if m.distance < 0.7*n.distance:
+        best_matches.append(matches[i])
       
-  # Filter by distance
-  best_matches = [ m[0] for m in best_matches if m[0].distance < DISTANCE_LIMIT][:MATCHES_NUM]
+    # Filter by distance
+    best_matches = [ m[0] for m in best_matches if m[0].distance < DISTANCE_LIMIT][:MATCHES_NUM]
+  else:
+    best_matches = [ m[0] for m in matches if m[0].distance < DISTANCE_LIMIT][:MATCHES_NUM]
+
   best_matches = sorted(best_matches, key=lambda x: x.distance)
 
   print "Good mathces: ", len(best_matches)
