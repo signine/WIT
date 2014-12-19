@@ -21,7 +21,9 @@ def main():
   kp, des = descriptor.compute(img, kp)
 
   img2 = cv2.drawKeypoints(gray, kp, flags=cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
-  cv2.imwrite('mser_keypoints2.jpg', img2)
+  cv2.imshow('mser_keypoints2', img2)
+  cv2.waitKey()
+  cv2.destroyAllWindows()
 
 
 if __name__ == "__main__":
