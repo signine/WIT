@@ -3,8 +3,6 @@ import numpy as np
 import sys
 import mser
 
-#execfile("mser.py")
-
 FEATURE_DETECTOR = "MSER"
 FEATURE_DESCRIPTOR = "SIFT"
 
