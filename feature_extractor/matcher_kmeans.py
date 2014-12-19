@@ -1,6 +1,9 @@
 import cv2
 import numpy as np
 import sys
+import mser
+
+#execfile("mser.py")
 
 FEATURE_DETECTOR = "MSER"
 FEATURE_DESCRIPTOR = "SIFT"
@@ -64,10 +67,12 @@ def main():
   # img1 = train, img2 = query
   #img1 = cv2.imread("1_college_1_0_0.jpg")
   #img2 = cv2.imread("9_college_1_0_40.jpg")
-  img1 = cv2.imread("109_college_10_0_0.jpg")
+  #img1 = cv2.imread("109_college_10_0_0.jpg")
   #img2 = cv2.imread("104_college_9_315_0.jpg")
   #img2 = cv2.imread("IMG_20141125_140931.jpg")
-  img2 = cv2.imread("116_college_10_315_0.jpg")
+  #img2 = cv2.imread("116_college_10_315_0.jpg")
+  img1 = cv2.imread("98_college_9_45_0.jpg")
+  img2 = cv2.imread("IMG_20141125_163036.jpg")
 
 
   #img1 = cv2.imread("98_college_9_45_0.jpg")
@@ -79,11 +84,11 @@ def main():
   detector = cv2.FeatureDetector_create(FEATURE_DETECTOR)
   descriptor = cv2.DescriptorExtractor_create(FEATURE_DESCRIPTOR)
 
-  kp1 = detector.detect(gray1)
+  kp1 = mser.detect_keypoints(gray1) 
   kp1, des1 = descriptor.compute(gray1, kp1)
   print "Img1 features: ", len(des1)
 
-  kp2 = detector.detect(gray2)
+  kp2 = mser.detect_keypoints(gray2)
   kp2, des2 = descriptor.compute(gray2, kp2)
   print "Img2 features: ", len(des2)
 
