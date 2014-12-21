@@ -28,7 +28,7 @@ def get_squares(regions, max_size=5000):
   
   return sqrs
 
-def detect_keypoints(img, max_size = 5000):
+def detect(img, max_size = 5000):
   mser = cv2.MSER(_max_area = max_size)
   regions = mser.detect(img, None)
   sqrs = get_squares(regions, max_size=max_size)
@@ -77,7 +77,7 @@ def main():
   print cnt
 
   descriptor = cv2.DescriptorExtractor_create("SIFT")
-  kp = detect_keypoints(gray1)
+  kp = detect(gray1)
   kp, des1 = descriptor.compute(gray1, kp)
   print "Img1 features: ", len(des1)
 

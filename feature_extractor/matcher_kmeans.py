@@ -82,11 +82,11 @@ def main():
   detector = cv2.FeatureDetector_create(FEATURE_DETECTOR)
   descriptor = cv2.DescriptorExtractor_create(FEATURE_DESCRIPTOR)
 
-  kp1 = mser.detect_keypoints(gray1) 
+  kp1 = mser.detect(gray1) 
   kp1, des1 = descriptor.compute(gray1, kp1)
   print "Img1 features: ", len(des1)
 
-  kp2 = mser.detect_keypoints(gray2)
+  kp2 = mser.detect(gray2)
   kp2, des2 = descriptor.compute(gray2, kp2)
   print "Img2 features: ", len(des2)
 

@@ -3,15 +3,23 @@ import numpy as np
 import os, sys
 import mysql.connector
 import simplejson as json
+import mser
 FEATURE_DETECTOR = "MSER"
 FEATURE_DESCRIPTOR = "SIFT"
+
+def get_detector():
+  if FEATURE_DETECTOR == "MSER":
+    return mser
+  else:
+    return cv2.FeatureDetector_create(FEATURE_DETECTOR)
+
 def main():
   image_dir = sys.argv[1]
   if not image_dir:
     print "Usage: python DatabaseFeatureExtractor.py <image dir>"
     return
 
-  detector = cv2.FeatureDetector_create(FEATURE_DETECTOR)
+  detector = get_detector() 
   descriptor = cv2.DescriptorExtractor_create(FEATURE_DESCRIPTOR)
   try:
     cnx = mysql.connector.connect(user='root', host='127.0.0.1', database='wit', buffered=True)
@@ -44,5 +52,6 @@ def main():
   cnx.commit()
   cursor.close()      
   cnx.close()
+
 if __name__ == "__main__":
   main()
