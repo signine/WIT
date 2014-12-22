@@ -46,7 +46,7 @@ def main():
         for keypoint in kp:
           insert_string = ("INSERT INTO features " 
           "(image_id, x, y, size, angle, descriptor, algorithm)"     
-          "VALUES (%s, %s, %s, %s, %s, %s, '%s')" %(imageid[0], keypoint.pt[0], keypoint.pt[1], keypoint.size, keypoint.angle, json.dumps(str(des[j])), FEATURE_DETECTOR) )
+          "VALUES (%s, %s, %s, %s, %s, '%s', '%s')" %(imageid[0], keypoint.pt[0], keypoint.pt[1], keypoint.size, keypoint.angle, json.dumps(des[j].tolist()), FEATURE_DETECTOR) )
           cursor.execute(insert_string)
           j=j+1
   cnx.commit()
