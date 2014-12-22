@@ -44,7 +44,6 @@ def draw_matches(imgt, imgq, kpt, kpq, matches, **kwargs):
       draw_lines = True
   
     for i,m in enumerate(matches):
-      print m.distance
       x1 = int(kpt[i].pt[0])
       y1 = int(kpt[i].pt[1])
       x2 = int(kpq[i].pt[0])
@@ -69,8 +68,13 @@ def main():
   #img2 = cv2.imread("104_college_9_315_0.jpg")
   #img2 = cv2.imread("IMG_20141125_140931.jpg")
   #img2 = cv2.imread("116_college_10_315_0.jpg")
-  img1 = cv2.imread("98_college_9_45_0.jpg")
-  img2 = cv2.imread("IMG_20141125_163036.jpg")
+  #img1 = cv2.imread("98_college_9_45_0.jpg")
+  #img2 = cv2.imread("IMG_20141125_163036.jpg")
+  #img1 = cv2.imread("80_college_7_315_0.jpg")
+  #img2 = cv2.imread("IMG_20141125_140931.jpg")
+
+  img1 = cv2.imread(sys.argv[1])
+  img2 = cv2.imread(sys.argv[2])
 
 
   #img1 = cv2.imread("98_college_9_45_0.jpg")
@@ -79,14 +83,17 @@ def main():
   gray1 = cv2.cvtColor(img1, cv2.COLOR_BGR2GRAY)
   gray2 = cv2.cvtColor(img2, cv2.COLOR_BGR2GRAY)
 
-  detector = cv2.FeatureDetector_create(FEATURE_DETECTOR)
+  if FEATURE_DETECTOR == "MSER":
+    detector = mser
+  else:
+    detector = cv2.FeatureDetector_create(FEATURE_DETECTOR)
   descriptor = cv2.DescriptorExtractor_create(FEATURE_DESCRIPTOR)
 
-  kp1 = mser.detect(gray1) 
+  kp1 = detector.detect(gray1) 
   kp1, des1 = descriptor.compute(gray1, kp1)
   print "Img1 features: ", len(des1)
 
-  kp2 = mser.detect(gray2)
+  kp2 = detector.detect(gray2)
   kp2, des2 = descriptor.compute(gray2, kp2)
   print "Img2 features: ", len(des2)
 

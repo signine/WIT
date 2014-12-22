@@ -1,5 +1,6 @@
 import numpy as np
 import cv2
+import sys
 
 class Square:
   def __init__(self, top_left, bottom_right, center, height):
@@ -40,8 +41,7 @@ def wait():
   cv2.destroyAllWindows()
 
 def main():
-  #img1 = cv2.imread("116_college_10_315_0.jpg")
-  img1 = cv2.imread("1_college_1_0_0.jpg")
+  img1 = cv2.imread(sys.argv[1])
   vis = img1.copy()
   gray1 = cv2.cvtColor(img1, cv2.COLOR_BGR2GRAY)
   
@@ -81,8 +81,8 @@ def main():
   kp, des1 = descriptor.compute(gray1, kp)
   print "Img1 features: ", len(des1)
 
-  #cv2.imshow('img', vis)
-  #wait()
+  cv2.imshow('img', vis)
+  wait()
   
 if __name__ == '__main__':
   main()
