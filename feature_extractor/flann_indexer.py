@@ -48,7 +48,6 @@ def build_index(features):
   flann = cv2.FlannBasedMatcher(index_params, search_params) 
 
   flann.add(np.array(features))
-
   flann.train()
   return flann
 
@@ -73,27 +72,23 @@ def print_hist(hist):
   for i in hist:
     print i, len(hist[i])
 
-flann = None
-matches = None
-
-imgs = get_imgs()
-features = get_features(imgs)
-
-start = datetime.now()
-flann = build_index(features)
-fin = datetime.now()
-
-print "Building index time: ", (fin - start).seconds
-
-des1 = get_descriptors("IMG_20141125_140931.jpg")
-des2 = get_descriptors("IMG_20141125_163021.jpg") 
-matches1 = flann.knnMatch(des1, k=1)
-matches2 = flann.knnMatch(des2, k=1)
-
-his1 = hist(matches1)
-his2 = hist(matches2)
+def main():
+  imgs = get_imgs()
+  features = get_features(imgs)
   
-"""
+  start = datetime.now()
+  flann = build_index(features)
+  fin = datetime.now()
+  
+  print "Building index time: ", (fin - start).seconds
+  
+  des1 = get_descriptors("IMG_20141125_140931.jpg")
+  des2 = get_descriptors("IMG_20141125_163021.jpg") 
+  matches1 = flann.knnMatch(des1, k=1)
+  matches2 = flann.knnMatch(des2, k=1)
+  
+  his1 = hist(matches1)
+  his2 = hist(matches2)
+  
 if __name__ == '__main__':
   main()
-"""
