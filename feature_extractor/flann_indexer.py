@@ -9,6 +9,9 @@ from datetime import datetime
 FLANN_INDEX_KMEANS = 2
 DB = None
 
+IMG_SIZE_W = 800
+IMG_SIZE_H = 600
+
 def convert_to_numpy(features):
   ret = []
   for img in features:
@@ -42,8 +45,8 @@ def get_features(imgs):
   print "Fetching features: ", (fin - start).seconds
   return features
 
-def build_index(features):
-  index_params = dict(algorithm = FLANN_INDEX_KMEANS, branching = 10, iterations = -1)
+def build_index(features, branch_factor):
+  index_params = dict(algorithm = FLANN_INDEX_KMEANS, branching = branch_factor, iterations = -1)
   search_params = dict(checks=50) 
   flann = cv2.FlannBasedMatcher(index_params, search_params) 
 
@@ -62,6 +65,9 @@ def hist(matches):
 
 def get_descriptors(img):
   img = cv2.imread(img)
+  if img.shape != (IMG_SIZE_H, IMG_SIZE_W):
+    img = cv2.resize(img, (IMG_SIZE_W, IMG_SIZE_H))
+
   gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
   kp = mser.detect(gray)
   descriptor = cv2.DescriptorExtractor_create("SIFT")
@@ -72,23 +78,29 @@ def print_hist(hist):
   for i in hist:
     print i, len(hist[i])
 
-def main():
-  imgs = get_imgs()
-  features = get_features(imgs)
+def get_n_best_matches(matches, imgs, n):
+  matches = [ (imgs[img][0], len(f)) for img, f in hist(matches).iteritems() ]
+  matches = sorted(matches, key=lambda x: x[1])
+  return matches[-n:]
   
-  start = datetime.now()
-  flann = build_index(features)
-  fin = datetime.now()
+
+
+imgs = get_imgs()
+features = get_features(imgs)
+
+start = datetime.now()
+flann = build_index(features, 10)
+fin = datetime.now()
   
-  print "Building index time: ", (fin - start).seconds
+print "Building index time: ", (fin - start).seconds
   
-  des1 = get_descriptors("IMG_20141125_140931.jpg")
-  des2 = get_descriptors("IMG_20141125_163021.jpg") 
-  matches1 = flann.knnMatch(des1, k=1)
-  matches2 = flann.knnMatch(des2, k=1)
+des1 = get_descriptors("IMG_20141125_140931.jpg")
+des2 = get_descriptors("IMG_20141125_163021.jpg") 
+matches1 = flann.knnMatch(des1, k=1)
+matches2 = flann.knnMatch(des2, k=1)
   
-  his1 = hist(matches1)
-  his2 = hist(matches2)
-  
+b1 = get_n_best_matches(matches1, imgs, 4)
+b2 = get_n_best_matches(matches2, imgs, 4)
+
 if __name__ == '__main__':
   main()
