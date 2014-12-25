@@ -57,6 +57,14 @@ def draw_matches(imgt, imgq, kpt, kpq, matches, **kwargs):
     cv2.imshow("Matches", combined_image)
     cv2.waitKey()
     cv2.destroyAllWindows()
+
+IMG_SIZE_W = 800
+IMG_SIZE_H = 600
+
+def resize(img):
+  if img.shape != (IMG_SIZE_H, IMG_SIZE_W):
+    img = cv2.resize(img, (IMG_SIZE_W, IMG_SIZE_H))
+  return img
     
 
 def main():
@@ -76,6 +84,8 @@ def main():
   img1 = cv2.imread(sys.argv[1])
   img2 = cv2.imread(sys.argv[2])
 
+  img1 = resize(img1)
+  img2 = resize(img2)
 
   #img1 = cv2.imread("98_college_9_45_0.jpg")
   #img2 = cv2.imread("IMG_20141125_163036.jpg")

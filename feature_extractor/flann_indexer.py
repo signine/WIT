@@ -108,16 +108,26 @@ def match_img(img, index):
   return matches 
   
 
+flann = None
+TEST_PICS_DIR = "../test_pics/"
 
-imgs = get_imgs()
-features = get_features(imgs)
+def main():
+  global flann
+  imgs = get_imgs()
+  features = get_features(imgs)
+  
+  start = datetime.now()
+  flann = build_index(imgs, features, 20)
+  fin = datetime.now()
+  print "Building index time: ", (fin - start).seconds
 
-start = datetime.now()
-flann = build_index(imgs, features, 20)
-fin = datetime.now()
-  
-print "Building index time: ", (fin - start).seconds
-  
+  import os
+
+  for filename in os.listdir(TEST_PICS_DIR):
+    if filename.endswith(".jpg"):
+      matches = match_img(os.path.join(TEST_PICS_DIR, filename), flann)
+      print filename
+      for m in matches: print m
 
 if __name__ == '__main__':
   main()
