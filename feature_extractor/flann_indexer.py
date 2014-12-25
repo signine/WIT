@@ -12,6 +12,17 @@ DB = None
 IMG_SIZE_W = 800
 IMG_SIZE_H = 600
 
+class Index():
+  """
+  Container class for holding index and required lists
+  """
+
+  def __init__(self, index, imgs, features):
+    self.index = index
+    self.imgs = imgs
+    self.features = features
+
+
 def convert_to_numpy(features):
   ret = []
   for img in features:
@@ -45,14 +56,16 @@ def get_features(imgs):
   print "Fetching features: ", (fin - start).seconds
   return features
 
-def build_index(features, branch_factor):
+def build_index(imgs, features, branch_factor):
   index_params = dict(algorithm = FLANN_INDEX_KMEANS, branching = branch_factor, iterations = -1)
   search_params = dict(checks=50) 
   flann = cv2.FlannBasedMatcher(index_params, search_params) 
 
   flann.add(np.array(features))
   flann.train()
-  return flann
+
+  index = Index(flann, imgs, features) 
+  return index 
 
 def hist(matches):
   his = {}
@@ -82,6 +95,17 @@ def get_n_best_matches(matches, imgs, n):
   matches = [ (imgs[img][0], len(f)) for img, f in hist(matches).iteritems() ]
   matches = sorted(matches, key=lambda x: x[1])
   return matches[-n:]
+
+def match_img(img, index):
+  start = datetime.now()
+
+  des = get_descriptors(img)
+  matches = index.index.knnMatch(des, k=1)
+  matches = get_n_best_matches(matches, index.imgs, 5)
+
+  fin = datetime.now()
+  print "Match time: ", (fin - start).seconds
+  return matches 
   
 
 
@@ -89,18 +113,11 @@ imgs = get_imgs()
 features = get_features(imgs)
 
 start = datetime.now()
-flann = build_index(features, 10)
+flann = build_index(imgs, features, 20)
 fin = datetime.now()
   
 print "Building index time: ", (fin - start).seconds
   
-des1 = get_descriptors("IMG_20141125_140931.jpg")
-des2 = get_descriptors("IMG_20141125_163021.jpg") 
-matches1 = flann.knnMatch(des1, k=1)
-matches2 = flann.knnMatch(des2, k=1)
-  
-b1 = get_n_best_matches(matches1, imgs, 4)
-b2 = get_n_best_matches(matches2, imgs, 4)
 
 if __name__ == '__main__':
   main()
