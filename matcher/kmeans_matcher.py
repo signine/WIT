@@ -1,6 +1,8 @@
 import cv2
 import numpy as np
-import sys
+import sys, os
+
+sys.path.append(os.path.join(os.getcwd(), "../feature_extractor/"))
 import mser
 
 FEATURE_DETECTOR = "MSER"
