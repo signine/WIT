@@ -1,10 +1,12 @@
 import numpy as np
 import cv2
 import sys, os
+import score
 sys.path.append(os.path.join(os.getcwd(), "../feature_extractor"))
 import flann_indexer
 import mser
 from datetime import datetime
+from img_match import ImgMatch
 
 IMG_SIZE_W = 800
 IMG_SIZE_H = 600
@@ -40,8 +42,9 @@ class SearchService():
       print i, len(hist[i])
   
   def get_n_best_matches(self, matches, imgs, n):
-    matches = [ (imgs[img][0], len(f)) for img, f in self.hist(matches).iteritems() ]
-    matches = sorted(matches, key=lambda x: x[1])
+    # Group by features then sort
+    matches = [ ImgMatch(imgs[img], f) for img, f in self.hist(matches).iteritems() ]
+    matches = sorted(matches, key=lambda x: x.count)
     return matches[-n:]
   
   def match_img(self, img, index):
@@ -61,6 +64,9 @@ class SearchService():
     matches = self.match_img(img, index)
     fin = datetime.now()
     print "Search time: ", (fin - start).seconds
+
+    print "LOCATIONS"
+    print score.group_by_location(matches)
     return matches
 
 TEST_PICS_DIR = "../test_pics/"
