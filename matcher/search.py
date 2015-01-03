@@ -2,6 +2,7 @@ import numpy as np
 import cv2
 import sys, os
 import score
+sys.path.append(os.path.join(os.getcwd(), "../indexer"))
 sys.path.append(os.path.join(os.getcwd(), "../feature_extractor"))
 import flann_indexer
 import mser

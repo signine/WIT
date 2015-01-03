@@ -1,24 +1,10 @@
 import numpy as np
-import cv2
 import simplejson as json
-import mser
 from sqlalchemy import create_engine
 from sqlalchemy.sql import text
 from datetime import datetime
 
-FLANN_INDEX_KMEANS = 2
 DB = None
-
-class Index():
-  """
-  Container class for holding index and required lists
-  """
-
-  def __init__(self, index, imgs, features):
-    self.index = index
-    self.imgs = imgs
-    self.features = features
-
 
 def convert_to_numpy(features):
   ret = []
@@ -53,28 +39,3 @@ def get_features(imgs):
   print "Fetching features: ", (fin - start).seconds
   return features
 
-def build_index(branch_factor, **kwargs):
-  """
-    Optional args: imgs, features
-  """
-
-  if 'imgs' in kwargs:
-    if 'features' not in kwargs: raise Exception("Missing 'features' arg")
-    imgs = kwargs['imgs']
-    features = kwargs['features']
-  else:
-    imgs = get_imgs()
-    features = get_features(imgs)
-
-  start = datetime.now()
-  index_params = dict(algorithm = FLANN_INDEX_KMEANS, branching = branch_factor, iterations = -1)
-  search_params = dict(checks=50) 
-  flann = cv2.FlannBasedMatcher(index_params, search_params) 
-
-  flann.add(np.array(features))
-  flann.train()
-  index = Index(flann, imgs, features) 
-
-  fin = datetime.now()
-  print "Build index time: ", (fin - start).seconds
-  return index 
