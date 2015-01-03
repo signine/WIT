@@ -7,7 +7,10 @@ from datetime import datetime
 DB = None
 
 def convert_to_numpy(features):
-  ret = []
+  """
+  Converts a list of features to a numpy list
+  """
+  ret = [] 
   for img in features:
     i = []
     for f in img:
@@ -16,7 +19,7 @@ def convert_to_numpy(features):
       i.append(f)
     ret.append(np.array(i))
 
-  return ret
+  return np.array(ret)
 
 def get_db_conn():
   global DB

@@ -36,7 +36,7 @@ def build_index(branch_factor, **kwargs):
   search_params = dict(checks=50) 
   flann = cv2.FlannBasedMatcher(index_params, search_params) 
 
-  flann.add(np.array(features))
+  flann.add(features)
   flann.train()
   index = Index(flann, imgs, features) 
 
