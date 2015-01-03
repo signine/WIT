@@ -1,3 +1,4 @@
 flickr/settings.py
 *.jpg
 **/settings.py*
+*.pyc
