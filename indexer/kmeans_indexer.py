@@ -44,13 +44,13 @@ class KMeansTree():
   
   def __cluster(self, data):
     print "Cl len: ", len(data)
-    start = datetime.now()
+    #start = datetime.now()
 
     km = cluster.KMeans(n_clusters=self.branch, init='k-means++')
     km.fit(data)
 
-    fin = datetime.now()
-    print "Cl time: ", (fin - start).seconds
+    #fin = datetime.now()
+    #print "Cl time: ", (fin - start).seconds
     return km
 
   def __set_parent(self, nodes, parent):
@@ -66,17 +66,27 @@ class KMeansTree():
     """
     nodes = []
     if len(data) < self.branch:
-      nodes = [ KMeansNode(d) for d in data ]
+      return [ KMeansNode(d) for d in data ]
     else:
       c = self.__cluster(data)
   
       i = 0
       while i < len(c.cluster_centers_):
-        node = KMeansNode(c.cluster_centers_[i])
-        data = self.data[np.where(c.labels_ == i)]
-        node.children = self.__build_tree(data)
-        self.__set_parent(node.children, node)
-        node.count = len(data)
+        cluster_data = data[np.where(c.labels_ == i)]
+        if len(cluster_data) > 1:
+          node = KMeansNode(c.cluster_centers_[i])
+          node.children = self.__build_tree(cluster_data)
+          self.__set_parent(node.children, node)
+          node.count = len(cluster_data)
+        elif len(cluster_data) == 0:
+          if c.cluster_centers_[i] in data:
+            node = KMeansNode(c.cluster_centers_[i])
+          else:
+            i += 1
+            continue
+        else:
+          node = KMeansNode(cluster_data[0])
+
         nodes.append(node)
         i += 1
     return nodes
@@ -84,20 +94,17 @@ class KMeansTree():
 def flatten_features(features):
   return np.array([ f for img in features for f in img ])
 
-d = []
-
-def traverse(root):
-  global d
-  d.append(root.count)
+def traverse(root, lst):
+  lst.append(root.count)
   for c in root.children:
-    traverse(c)
+    traverse(c, lst)
+  return lst
 
 imgs = get_imgs()
 features = convert_to_numpy(get_features(imgs))
 features = flatten_features(features)
 
 print len(features)
-
 tree = KMeansTree(20)
 tree.set_data(features)
 tree.train()
@@ -113,6 +120,7 @@ labels_count_ids = np.nonzero(labels_count)[0]
 
 print zip(labels_count_ids, labels_count[labels_count_ids])
 
+print kmeans.labels_.min(), kmeans.labels_.max(), len(kmeans.cluster_centers_)
 fin = datetime.now()
 print "Time: ", (fin - start).seconds
 """
