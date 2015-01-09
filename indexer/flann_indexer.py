@@ -1,7 +1,7 @@
 import numpy as np
 import cv2
 import sys, os
-from img_utils import get_imgs, get_features
+from img_utils import get_imgs, get_features_np
 from datetime import datetime
 
 FLANN_INDEX_KMEANS = 2
@@ -27,7 +27,7 @@ def build_index(branch_factor, **kwargs):
     features = kwargs['features']
   else:
     imgs = get_imgs()
-    features = get_features(imgs)
+    features = get_features_np(imgs)
 
   if len(imgs) != len(features): raise Exception("img vector length not equal to feature vector")
 

@@ -1,12 +1,12 @@
 import numpy as np
 from sklearn import cluster
-from img_utils import get_imgs, get_features, convert_to_numpy
+from img_utils import get_imgs, get_features_np, get_features, convert_to_numpy
 from datetime import datetime
 
 class KMeansNode():
   
   def __init__(self, data):
-    self.data = data 
+    self.data = data # Flat list of all features, used for clustering
     self.children = []
     self.parent = None
     self.count = 0 # Number of data points clustered for this node
@@ -23,15 +23,15 @@ class KMeansTree():
     self.data = []
     self.root = None
     self.branch = branch
+    self.imgs = [] # List of tuples ((img metadata), [features])
 
-  def set_data(self, data):
-    self.data = data
+  def add_imgs(self, imgs):
+    self.imgs += imgs
 
-  def add(self, data):
-    self.data.append(data)
-  
   def train(self):
     start = datetime.now()
+    # Flatten and collect all features
+    self.data = np.array([ feature for img in self.imgs for feature in img[1] ])
 
     self.root = KMeansNode(None)
     self.root.children = self.__build_tree(self.data)
@@ -40,7 +40,6 @@ class KMeansTree():
 
     fin = datetime.now()
     print "Train time: ", (fin - start).seconds
-
   
   def __cluster(self, data):
     print "Cl len: ", len(data)
@@ -91,9 +90,6 @@ class KMeansTree():
         i += 1
     return nodes
 
-def flatten_features(features):
-  return np.array([ f for img in features for f in img ])
-
 def traverse(root, lst):
   lst.append(root.count)
   for c in root.children:
@@ -101,12 +97,12 @@ def traverse(root, lst):
   return lst
 
 imgs = get_imgs()
-features = convert_to_numpy(get_features(imgs))
-features = flatten_features(features)
+features = get_features_np(imgs)
+img_data = zip(imgs, features)
 
-print len(features)
+print len(img_data)
 tree = KMeansTree(20)
-tree.set_data(features)
+tree.add_imgs(img_data)
 tree.train()
 
 """

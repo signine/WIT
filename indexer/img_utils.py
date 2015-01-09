@@ -33,12 +33,21 @@ def get_imgs():
   return [ img for img in db.execute(all_images_query) ]
 
 def get_features(imgs):
+  """
+  Input: list of tuples return from 'get_imgs'
+  """
   start = datetime.now()
   db = get_db_conn()
   features_query = text("SELECT descriptor from features join images on images.id = features.image_id where algorithm = 'MSER' and features.image_id = :image_id")
   features = [ [ json.loads(f[0]) for f in db.execute(features_query, image_id=i[0]) ] for i in imgs ]
-  features = convert_to_numpy(features)
   fin = datetime.now()
   print "Fetching features: ", (fin - start).seconds
   return features
 
+def get_features_np(imgs):
+  """
+  Extremely slow. Should only be used for Flann Indexer
+  """
+  features = get_features(imgs)
+  features = convert_to_numpy(features)
+  return features
