@@ -10,12 +10,7 @@ class KMeansNode():
     self.children = []
     self.parent = None
     self.count = 0 # Number of data points clustered for this node
-
-  def add_child(self, child):
-    self.children.append(child)
-
-  def remove_child(self, child):
-    self.children.remove(child)
+    self.imgs = [] # Images that have this feature
 
 class KMeansTree():
 
@@ -32,6 +27,9 @@ class KMeansTree():
     start = datetime.now()
     # Flatten and collect all features
     self.data = np.array([ feature for img in self.imgs for feature in img[1] ])
+    print "Data : ", len(self.data)
+    self.data = self.__remove_duplicates(self.data)
+    print "Data set: ", len(self.data)
 
     self.root = KMeansNode(None)
     self.root.children = self.__build_tree(self.data)
@@ -89,6 +87,11 @@ class KMeansTree():
         nodes.append(node)
         i += 1
     return nodes
+
+  def __remove_duplicates(self, features):
+    a = features.view(np.dtype((np.void, features.dtype.itemsize * features.shape[1])))
+    _, ids = np.unique(a, return_index=True)
+    return features[ids]
 
 def traverse(root, lst):
   lst.append(root.count)
