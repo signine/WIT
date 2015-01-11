@@ -9,9 +9,6 @@ import mser
 from datetime import datetime
 from img_match import ImgMatch
 
-IMG_SIZE_W = 800
-IMG_SIZE_H = 600
-
 class SearchService():
   IMG_SIZE_W = 800
   IMG_SIZE_H = 600
