@@ -64,7 +64,7 @@ class SearchService():
     matches = score.score(matches)
 
     fin = datetime.now()
-    print "Search time: ", (fin - start).seconds
+    print "Search time: ", (fin - start).seconds, " seconds"
     return matches
 
 TEST_PICS_DIR = "../test_pics/"

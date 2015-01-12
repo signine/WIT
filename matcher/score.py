@@ -40,6 +40,10 @@ def score(matches):
       loc.score += score_img_match(img, total_features)
     location_scores.append(loc)
 
-  location_scores = sorted(location_scores, key=lambda x: x.score)
+  location_scores = sorted(location_scores, key=lambda x: x.score, reverse=True)
+  max_score = location_scores[0].score
+  # Remove locations that are less than 80% of the top score
+  location_scores = filter(lambda x: x.score > (0.8 * max_score), location_scores)
+
   return location_scores
 
