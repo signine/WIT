@@ -106,12 +106,12 @@ class KMeansTree():
   def __distance(self, d1, d2):
     return np.linalg.norm(d1-d2)
 
-  def knnMatch(self, data_list, **kwargs):
+  def knn_match(self, data_list, **kwargs):
     """
     Takes a list of features and returnes best matches for each feature
     """
 
-    return [ self.knn_search(data, kwargs) for data in data_list ]
+    return [ self.knn_search(data, **kwargs) for data in data_list ]
 
 
   def knn_search(self, data, **kwargs):
@@ -145,6 +145,17 @@ class KMeansTree():
       k -= 1
       ret.append(node)
       self.__knn_search(data, queue, ret, k)
+
+def build_index(branch_factor):
+  imgs = get_imgs()
+  features = get_features_np(imgs)
+  img_data = zip(imgs, features)
+  
+  print "Total features: ", len(img_data)
+  index = KMeansTree(branch_factor)
+  index.add_imgs(img_data)
+  index.train()
+  return index
 
 def traverse(root, lst):
   lst.append(root.count)

@@ -4,7 +4,7 @@ import sys, os
 import score
 sys.path.append(os.path.join(os.getcwd(), "../indexer"))
 sys.path.append(os.path.join(os.getcwd(), "../feature_extractor"))
-import flann_indexer
+from kmeans_indexer import KMeansTree, build_index 
 import mser
 from datetime import datetime
 from img_match import ImgMatch
@@ -15,8 +15,20 @@ class SearchService():
 
   index = None
 
-  def hist(self, matches):
+  def __group_by_img(self, matches):
+    """
+    Returns a dictionary of img to feature count
+    """
     his = {}
+    for f_match in matches:
+      for m in f_match:
+        for img in m.imgs:
+          if img in his:
+            his[img] += 1
+          else:
+            his[img] = 1
+    return his
+
     for m in matches:
       if m[0].imgIdx in his:
         his[m[0].imgIdx].append(m[0])
@@ -39,29 +51,29 @@ class SearchService():
     for i in hist:
       print i, len(hist[i])
   
-  def get_n_best_matches(self, matches, imgs, n):
+  def get_n_best_matches(self, matches, n):
     # Group by features then sort
-    matches = [ ImgMatch(imgs[img], f) for img, f in self.hist(matches).iteritems() ]
-    matches = sorted(matches, key=lambda x: x.count)
+    matches = self.__group_by_img(matches).items()
+    matches = sorted(matches, key=lambda x: x[1])
     return matches[-n:]
   
-  def match_img(self, img, index):
+  def match_img(self, img):
+    index = self.get_index()
     des = self.get_descriptors(img)
-    matches = index.index.knnMatch(des, k=1)
-    matches = self.get_n_best_matches(matches, index.imgs, 5)
+    matches = index.knn_match(des, k=1)
+    matches = self.get_n_best_matches(matches, 5)
     return matches 
 
   def get_index(self):
     if not self.index:
-      self.index = flann_indexer.build_index(20)
+      self.index = build_index(20) 
     return self.index
 
   def search(self, img):
     start = datetime.now()
 
-    index = self.get_index()
-    matches = self.match_img(img, index)
-    matches = score.score(matches)
+    matches = self.match_img(img)
+    #matches = score.score(matches)
 
     fin = datetime.now()
     print "Search time: ", (fin - start).seconds, " seconds"
@@ -77,7 +89,8 @@ def main():
       matches = search_service.search(os.path.join(TEST_PICS_DIR, filename))
       print filename
       for m in matches:
-        print m.location, m.score
+        #print m.location, m.score
+        print m
 
 if __name__ == '__main__':
   main()
