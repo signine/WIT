@@ -42,7 +42,8 @@ class KMeansTree():
         img_id = img[0]
         nodes = self.knn_search(f, k=1)
         n = nodes[0]
-        print self.__distance(f, n.data) 
+        d = self.__distance(f, n.data) 
+        if d != 0: print d, img
         n.imgs.append(img_id)
 
     fin = datetime.now()
@@ -105,7 +106,18 @@ class KMeansTree():
   def __distance(self, d1, d2):
     return np.linalg.norm(d1-d2)
 
+  def knnMatch(self, data_list, **kwargs):
+    """
+    Takes a list of features and returnes best matches for each feature
+    """
+
+    return [ self.knn_search(data, kwargs) for data in data_list ]
+
+
   def knn_search(self, data, **kwargs):
+    """
+    Takes one feature and returns nearest neighbors
+    """
     if 'k' in kwargs:
       k = kwargs['k']
     else:
@@ -140,27 +152,18 @@ def traverse(root, lst):
     traverse(c, lst)
   return lst
 
-imgs = get_imgs()
-features = get_features_np(imgs)
-img_data = zip(imgs, features)
+tree = None
 
-print len(img_data)
-tree = KMeansTree(20)
-tree.add_imgs(img_data)
-tree.train()
+def main():
+  global tree
+  imgs = get_imgs()
+  features = get_features_np(imgs)
+  img_data = zip(imgs, features)
+  
+  print len(img_data)
+  tree = KMeansTree(20)
+  tree.add_imgs(img_data)
+  tree.train()
 
-"""
-start = datetime.now()
-
-kmeans = cluster.KMeans(n_clusters=20, init='k-means++')
-kmeans.fit(features)
-
-labels_count = np.bincount(kmeans.labels_)
-labels_count_ids = np.nonzero(labels_count)[0]
-
-print zip(labels_count_ids, labels_count[labels_count_ids])
-
-print kmeans.labels_.min(), kmeans.labels_.max(), len(kmeans.cluster_centers_)
-fin = datetime.now()
-print "Time: ", (fin - start).seconds
-"""
+if __name__ == '__main__':
+  main()
