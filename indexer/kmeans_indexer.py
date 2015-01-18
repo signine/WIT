@@ -93,6 +93,38 @@ class KMeansTree():
     _, ids = np.unique(a, return_index=True)
     return features[ids]
 
+  def __distance(self, d1, d2):
+    return np.linalg.norm(d1-d2)
+
+  def knn_search(self, data, **kwargs):
+    if 'k' in kwargs:
+      k = kwargs['k']
+    else:
+      k = 1
+
+    if not self.root: raise Exception("Tree is not built")
+
+    queue = [self.root]
+    ret = []
+    self.__knn_search(data, queue, ret, k)
+    return ret
+
+  def __knn_search(self, data, queue, ret, k):
+    if k == 0: return ret
+    if len(queue) == 0: return ret
+
+    node = queue.pop()
+    if len(node.children) > 0:
+      dis = [ (c, self.__distance(data, c.data)) for c in node.children ]
+      dis = sorted(dis, key=lambda x: x[1], reverse=True)
+      new_c, dis = zip(*dis)
+      queue += new_c
+      self.__knn_search(data, queue, ret, k)
+    else:
+      k -= 1
+      ret.append(node)
+      self.__knn_search(data, queue, ret, k)
+
 def traverse(root, lst):
   lst.append(root.count)
   for c in root.children:
