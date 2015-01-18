@@ -10,7 +10,7 @@ class KMeansNode():
     self.children = []
     self.parent = None
     self.count = 0 # Number of data points clustered for this node
-    self.imgs = [] # Images that have this feature
+    self.imgs = [] # ids of images that have this feature
 
 class KMeansTree():
 
@@ -36,11 +36,20 @@ class KMeansTree():
     self.__set_parent(self.root.children, self.root)
     self.root.count = len(self.data)
 
+    print "Building index files"
+    for img, features in self.imgs:
+      for f in features:
+        img_id = img[0]
+        nodes = self.knn_search(f, k=1)
+        n = nodes[0]
+        print self.__distance(f, n.data) 
+        n.imgs.append(img_id)
+
     fin = datetime.now()
     print "Train time: ", (fin - start).seconds
   
   def __cluster(self, data):
-    print "Cl len: ", len(data)
+    #print "Cl len: ", len(data)
     #start = datetime.now()
 
     km = cluster.KMeans(n_clusters=self.branch, init='k-means++')
