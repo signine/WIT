@@ -3,5 +3,6 @@ CREATE TABLE kmeans_tree (
   parent_id INT,
   descriptor TEXT,
   children VARCHAR(1000),
-  images VARCHAR(500)
+  images VARCHAR(500),
+  features INT DEFAULT 0 
 ) ENGINE = InnoDB;
