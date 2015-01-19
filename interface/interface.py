@@ -1,18 +1,21 @@
 import os, sys
+import numpy as np
 sys.path.append(os.path.join(os.getcwd(), "../matcher"))
 from search import SearchService
 from flask import Flask, request, redirect, url_for, send_from_directory, render_template
 app = Flask(__name__)
 
+IMG_DIR = os.path.join(os.getcwd(), "imgs/")
 search_service = SearchService()
 
 @app.route('/', methods=['GET', 'POST'])
 def upload_file():
     if request.method == 'POST':
         file = request.files['file']
-        file.save(os.path.join(os.getcwd() +'/imgs/', file.filename))
-        matches = search_service.search(os.path.join(os.getcwd() + '/imgs/', file.filename))
-        coordinates = [ list(m.location)  for m in matches ]
+        filename = os.path.join(IMG_DIR, file.filename)
+        file.save(filename)
+        matches = search_service.search(filename)
+        coordinates = [ list(m.location) for m in matches ]
         print coordinates
         return redirect(url_for('uploaded_file', coordinates=coordinates))
     return '''
