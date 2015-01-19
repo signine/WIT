@@ -19,9 +19,9 @@ class SearchService():
     his = {}
     for m in matches:
       if m[0].imgIdx in his:
-        his[m[0].imgIdx].append(m[0])
+        his[m[0].imgIdx] += 1
       else:
-        his[m[0].imgIdx] = [m[0]]
+        his[m[0].imgIdx] = 1
     return his
   
   def get_descriptors(self, img):

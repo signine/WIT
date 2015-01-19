@@ -4,8 +4,8 @@ import sys, os
 import score
 sys.path.append(os.path.join(os.getcwd(), "../indexer"))
 sys.path.append(os.path.join(os.getcwd(), "../feature_extractor"))
-from kmeans_indexer import KMeansTree, build_index 
 import mser
+from kmeans_tree_matcher import KMeansTreeMatcher
 from datetime import datetime
 from img_match import ImgMatch
 
@@ -49,8 +49,7 @@ class SearchService():
   
   def get_n_best_matches(self, matches, n):
     # Group by features then sort
-    matches = self.__group_by_img(matches).items()
-    matches = sorted(matches, key=lambda x: x[1])
+    matches = sorted(matches, key=lambda x: x.count)
     return matches[-n:]
   
   def match_img(self, img):
@@ -62,14 +61,14 @@ class SearchService():
 
   def get_index(self):
     if not self.index:
-      self.index = build_index(20) 
+      self.index = KMeansTreeMatcher() 
     return self.index
 
   def search(self, img):
     start = datetime.now()
 
     matches = self.match_img(img)
-    #matches = score.score(matches)
+    matches = score.score(matches)
 
     fin = datetime.now()
     print "Search time: ", (fin - start).seconds, " seconds"
@@ -85,8 +84,8 @@ def main():
       matches = search_service.search(os.path.join(TEST_PICS_DIR, filename))
       print filename
       for m in matches:
-        #print m.location, m.score
-        print m
+        print m.location, m.score
+        #print m.img_data, m.count
 
 if __name__ == '__main__':
   main()

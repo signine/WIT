@@ -4,6 +4,7 @@ import simplejson as json
 sys.path.append(os.path.join(os.getcwd(), "../indexer"))
 from img_utils import get_imgs, get_features_np, get_features, convert_to_numpy
 from datetime import datetime
+from img_match import ImgMatch
 from sqlalchemy import create_engine
 from sqlalchemy.sql import text
 
@@ -34,6 +35,10 @@ class KMeansTreeMatcher():
     q = self.db.execute(text("SELECT * FROM kmeans_tree WHERE id=:id"), id=id)
     return self.__sql_to_object(iter(q).next())
 
+  def __fetch_img(self, id):
+    q = self.db.execute(text("SELECT * FROM images WHERE id=:id"), id=id)
+    return iter(q).next()
+
   def __sql_to_object(self, sql):
     obj = KMeansNode()
     obj.id = sql[0]
@@ -57,14 +62,29 @@ class KMeansTreeMatcher():
     Takes a list of features and returnes best matches for each feature
     """
 
-    return [ self.knn_search(data, **kwargs) for data in feature_list ]
+    ret = []
+    feature_matches = [ self.knn_search(data, **kwargs) for data in feature_list ]
+    img_matches = self.__group_by_img(feature_matches)
+    for img_id in img_matches:
+      img = self.__get_img(img_id)
+      ret.append(ImgMatch(img, img_matches[img_id]))
+    return ret
 
+  def __group_by_img(self, nodes):
+    imgs = {}
+    for node_list in nodes:
+      for n in node_list:
+        for i in n.imgs:
+          if i in imgs:
+            imgs[i] += 1
+          else:
+            imgs[i] = 1
+    return imgs
 
   def knn_search(self, feature, **kwargs):
     """
     Takes one feature and returns nearest neighbors
     """
-    s = datetime.now()
     if 'k' in kwargs:
       k = kwargs['k']
     else:
@@ -74,8 +94,6 @@ class KMeansTreeMatcher():
     ret = []
     self.__knn_search(feature, queue, ret, k)
 
-    f = datetime.now()
-    print "Search time: ", (f-s).seconds
     return ret
 
   def __knn_search(self, feature, queue, ret, k):
@@ -105,6 +123,12 @@ class KMeansTreeMatcher():
       node = self.__fetch_node(id)
       self.node_cache[id] = node
     return self.node_cache[id]
+  
+  def __get_img(self, id):
+    if id not in self.img_cache:
+      img = self.__fetch_img(id)
+      self.img_cache[id] = img
+    return self.img_cache[id]
 
 def main():
   tree = KMeansTreeMatcher()
@@ -114,8 +138,7 @@ def main():
 
   p = tree.knn_match(features[0])
   for k in p:
-    for i in k:
-      print i.imgs
+    print k.img_data, k.count
 
 if __name__ == '__main__':
   main()

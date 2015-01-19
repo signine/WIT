@@ -25,7 +25,6 @@ def group_by_location(matches):
 def score_img_match(img_match, total_features):
   return 100 * ((img_match.count * 1.0) / total_features)
 
-
 def score(matches):
   total_features = 0
   for m in matches: total_features += m.count
