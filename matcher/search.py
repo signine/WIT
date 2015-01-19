@@ -47,10 +47,6 @@ class SearchService():
     kp, des = descriptor.compute(gray, kp)
     return des
   
-  def print_hist(self, hist):
-    for i in hist:
-      print i, len(hist[i])
-  
   def get_n_best_matches(self, matches, n):
     # Group by features then sort
     matches = self.__group_by_img(matches).items()

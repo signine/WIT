@@ -9,6 +9,7 @@ DB = None
 def convert_to_numpy(features):
   """
   Converts a list of features to a numpy list
+  fetures = [ [f1, f2 f3 ...], [f1, f2, f3 ...], ...]
   """
   ret = [] 
   for img in features:
