@@ -25,8 +25,8 @@ def upload_file():
 	
 @app.route('/uploads/<match>')
 def uploaded_file(match):
-    coordinateList = [[43.65879, -79.3955], [43.65908, -79.39406]] #[43.6584115,-79.3976985], [43.6592653, -79.3959926]]
-    return render_template('drawmap2.html', coordinateList = coordinateList)#send_from_directory('C:\Code\DesignProject\Test\database',match)
+    coordinateList = [[43.6592, -79.3935 ]] #[43.6584115,-79.3976985], [43.6592653, -79.3959926]]
+    return render_template('drawmaps.html', coordinateList = coordinateList)#send_from_directory('C:\Code\DesignProject\Test\database',match)
 
 if __name__ == '__main__':
     app.run(debug=True)
