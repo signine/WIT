@@ -33,5 +33,10 @@ def uploaded_file(coordinates):
     coordinateList = coordinates #[43.6584115,-79.3976985], [43.6592653, -79.3959926]]
     return render_template('drawmap.html', coordinateList = coordinateList)#send_from_directory('C:\Code\DesignProject\Test\database',match)
 
+@app.route('/warmcache/')
+def warm_cache():
+  search_service.warm_cache()
+  return redirect(url_for('upload_file'))
+
 if __name__ == '__main__':
     app.run(debug=True)

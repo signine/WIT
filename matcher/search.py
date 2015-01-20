@@ -70,9 +70,16 @@ class SearchService():
     matches = self.match_img(img)
     matches = score.score(matches)
 
+    for m in matches:
+      print m.location, m.score
     fin = datetime.now()
     print "Search time: ", (fin - start).seconds, " seconds"
     return matches
+  
+  def warm_cache(self):
+    for filename in os.listdir(TEST_PICS_DIR):
+      if filename.endswith(".jpg"):
+        matches = self.search(os.path.join(TEST_PICS_DIR, filename))
 
 TEST_PICS_DIR = "../test_pics/"
 
