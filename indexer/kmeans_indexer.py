@@ -57,7 +57,8 @@ class KMeansTree():
         n = nodes[0]
         d = self.__distance(f, n.data) 
         if d != 0: print d, img
-        if img_id not in n.imgs: n.imgs.append(img_id)
+        #if img_id not in n.imgs: n.imgs.append(img_id)
+        n.imgs.append(img_id)
 
   def __cluster(self, data):
     #print "Cl len: ", len(data)
