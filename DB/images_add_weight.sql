@@ -1,0 +1,2 @@
+ALTER TABLE images
+ADD weight INT NOT NULL DEFAULT 1

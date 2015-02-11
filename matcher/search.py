@@ -14,7 +14,6 @@ class SearchService():
   IMG_SIZE_H = 600
 
   index = None
-
   def __group_by_img(self, matches):
     """
     Returns a dictionary of img to feature count
@@ -55,7 +54,7 @@ class SearchService():
   def match_img(self, img):
     index = self.get_index()
     des = self.get_descriptors(img)
-    matches = index.knn_match(des, k=1)
+    matches, _ = index.knn_match(des, k=1)
     matches = self.get_n_best_matches(matches, 5)
     return matches 
 

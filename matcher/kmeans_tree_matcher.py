@@ -68,7 +68,7 @@ class KMeansTreeMatcher():
     for img_id in img_matches:
       img = self.__get_img(img_id)
       ret.append(ImgMatch(img, img_matches[img_id]))
-    return ret
+    return ret, img_matches
 
   def __group_by_img(self, nodes):
     imgs = {}
@@ -136,7 +136,7 @@ def main():
   imgs = get_imgs()
   features = get_features_np(imgs)
 
-  p = tree.knn_match(features[0])
+  p, _ = tree.knn_match(features[0])
   for k in p:
     print k.img_data, k.count
 
