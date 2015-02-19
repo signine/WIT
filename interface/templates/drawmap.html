@@ -52,18 +52,19 @@
                        icon : ' http://maps.google.com/mapfiles/ms/icons/blue-dot.png'
                     }); 
                 }
-                
+                pano = null;               
                 google.maps.event.addListener(marker, 'click', function() 
                 {
 
                     infoWindow.open(map, marker);
-                    pano = null;
+                    
                     google.maps.event.addListener(infoWindow, 'domready', function () {
                         if (pano != null)
                         {
                             pano.unbind("position");
                             pano.setVisible(false);
                         }
+
                         pano = new google.maps.StreetViewPanorama(document.getElementById("content"), 
                         {
                             enableCloseButton: false,
