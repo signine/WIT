@@ -1,5 +1,6 @@
 import os, sys
 import numpy as np
+import simplejson as json
 sys.path.append(os.path.join(os.getcwd(), "../matcher"))
 from search import SearchService
 from flask import Flask, request, redirect, url_for, send_from_directory, render_template
@@ -17,7 +18,7 @@ def upload_file():
         matches = search_service.search(filename)
         coordinates = [ list(m.location) for m in matches ]
         print coordinates
-        return redirect(url_for('uploaded_file', coordinates=coordinates))
+        return redirect(url_for('uploaded_file', coordinates=json.dumps(coordinates)))
     return '''
     <!doctype html>
         <title>Where is this? Photo Location Finder</title>
@@ -39,4 +40,13 @@ def warm_cache():
   return redirect(url_for('upload_file'))
 
 if __name__ == '__main__':
+  if len(sys.argv) > 1:
+    env = sys.argv[1]
+  else:
+    env = 'dev'
+
+  if env == 'live':
+    app.run(host='0.0.0.0', port=80)
+  # dev
+  else:
     app.run(debug=True)
