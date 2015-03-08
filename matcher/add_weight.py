@@ -11,6 +11,8 @@ IMG_SIZE_W = 800
 IMG_SIZE_H = 600
 
 def noise_search_and_update(img):
+
+    ''' add a weight to each feature match that matches more than 2 images '''
     index = KMeansTreeMatcher() 
     img = cv2.imread(img)
     if img.shape != (IMG_SIZE_H, IMG_SIZE_W):
@@ -19,33 +21,20 @@ def noise_search_and_update(img):
     kp = mser.detect(gray)
     descriptor = cv2.DescriptorExtractor_create("SIFT")
     kp, des = descriptor.compute(gray, kp)
-    matches, img_matches = index.knn_match( des, k=1)
-    img_matches = sorted(img_matches, key=lambda x: img_matches[x])
-    img_matches = img_matches[-4:]
-    matches = sorted(matches, key=lambda x: x.count)
-    matches = matches[-4:]
-    #make sure the best matches are the same, the 4 i have access to in the database are the best matches!
+    feature_matches = index.knn_match_for_weight( des, k=1)
     db = create_engine("mysql://root@localhost:3306/WIT")
-    for img_id in img_matches:
-      print img_id
-      #q = db.execute(text("SELECT id,lat,lng,street_name,weight FROM images WHERE id=:id"), id=img_id)
-      #print iter(q).next()
-      #edit those fields:
-      db.execute(text("UPDATE images SET weight=5 WHERE id=:id"), id=img_id)
-      #q = db.execute(text("SELECT id,lat,lng,street_name,weight FROM images WHERE id=:id"), id=img_id)
-      #print iter(q).next()
+    for node in feature_matches:
+      if (len(node[0].imgs)) > 2:
+        print node[0].id
+        db.execute(text("UPDATE features SET weight=5 WHERE id=:id"), id=node[0].id)        
+    return 0
 
-    return matches
-
-    
-
+   
 def main():
   for filename in os.listdir(NOISE_PICS_DIR):
     print filename
     if filename.endswith(".jpg") or filename.endswith(".JPG"):
       matches = noise_search_and_update(os.path.join(NOISE_PICS_DIR, filename))
-      for m in matches:
-        print m.location, m.weight
 
 if __name__ == '__main__':
   main()

@@ -6,7 +6,6 @@ CREATE TABLE images (
   step_id SMALLINT NOT NULL,
   heading SMALLINT NOT NULL,
   pitch SMALLINT NOT NULL,
-  weight INT NOT NULL,
   date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (id),
   INDEX coordinates (lat, lng)

@@ -54,7 +54,7 @@ class SearchService():
   def match_img(self, img):
     index = self.get_index()
     des = self.get_descriptors(img)
-    matches, _ = index.knn_match(des, k=1)
+    matches = index.knn_match(des, k=1)
     matches = self.get_n_best_matches(matches, 5)
     return matches 
 

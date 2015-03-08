@@ -68,7 +68,16 @@ class KMeansTreeMatcher():
     for img_id in img_matches:
       img = self.__get_img(img_id)
       ret.append(ImgMatch(img, img_matches[img_id]))
-    return ret, img_matches
+    return ret
+    
+  def knn_match_for_weight(self, feature_list, **kwargs):
+    """
+    Takes a list of features and returnes best matches for each feature 
+    """
+    feature_matches = []
+    for data in feature_list:
+        feature_matches.append(self.knn_search(data, **kwargs))
+    return feature_matches
 
   def __group_by_img(self, nodes):
     imgs = {}
@@ -136,7 +145,7 @@ def main():
   imgs = get_imgs()
   features = get_features_np(imgs)
 
-  p, _ = tree.knn_match(features[0])
+  p = tree.knn_match(features[0])
   for k in p:
     print k.img_data, k.count
 
