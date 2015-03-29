@@ -17,7 +17,7 @@ DEFAULTS = {'size': '800x600', 'fov': 80, 'key': settings.GOOGLE_API_KEY, 'userI
 DELAY = 0.5
 
 # Image positions per coordinate. Format: (heading, pitch)
-IMG_POSITIONS = ((0, 0), (45, 0), (90, 0), (135, 0), (180, 0), (225, 0), (270, 0), (315, 0), (0, 40), (90, 40), (180, 40), (270, 40))
+IMG_POSITIONS = ((0, 0), (45, 0), (90, 0), (135, 0), (180, 0), (225, 0), (270, 0), (315, 0))
 IDENTITY_POSITION = (0, 0)
 
 INSERT_SQL = text("INSERT INTO images (lat, lng, street_name, step_id, heading, pitch) VALUES (:lat, :lng, :street_name, :step_id, :heading, :pitch);")

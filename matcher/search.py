@@ -71,6 +71,7 @@ class SearchService():
 
     for m in matches:
       print m.location, m.score
+
     fin = datetime.now()
     print "Search time: ", (fin - start).seconds, " seconds"
     return matches
@@ -87,11 +88,8 @@ def main():
 
   for filename in os.listdir(TEST_PICS_DIR):
     if filename.endswith(".jpg"):
-      matches = search_service.search(os.path.join(TEST_PICS_DIR, filename))
       print filename
-      for m in matches:
-        print m.location, m.score
-        #print m.img_data, m.count
+      matches = search_service.search(os.path.join(TEST_PICS_DIR, filename))
 
 if __name__ == '__main__':
   main()

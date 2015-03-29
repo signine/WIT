@@ -44,6 +44,11 @@ def upload_file():
                 src: bb.otf;
             }
 
+           body {
+                background-image:url('imgs/bg.png');
+                background-size:100%;
+            }
+
             #header {
                 background-color:black;
                 color:white;
@@ -83,6 +88,10 @@ def upload_file():
 def uploaded_file(coordinates):
     coordinateList = coordinates #[43.6584115,-79.3976985], [43.6592653, -79.3959926]]
     return render_template('drawmap.html', coordinateList = coordinateList)#send_from_directory('C:\Code\DesignProject\Test\database',match)
+
+@app.route('/imgs/<path:path>')
+def serve_img(path):
+  return send_from_directory('imgs', path)
 
 @app.route('/warmcache/')
 def warm_cache():
