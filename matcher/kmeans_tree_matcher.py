@@ -17,6 +17,7 @@ class KMeansNode():
     self.features = None
     self.children = []
     self.imgs = []
+    self.weight = None
 
 class KMeansTreeMatcher():
   def __init__(self):
@@ -46,6 +47,7 @@ class KMeansTreeMatcher():
     obj.features = sql[5]
     obj.children = json.loads(sql[3])
     obj.imgs = json.loads(sql[4])
+    obj.weight = sql[6]
 
     descriptor = sql[2]
     if descriptor is not None and descriptor != '': 
@@ -85,9 +87,9 @@ class KMeansTreeMatcher():
       for n in node_list:
         for i in n.imgs:
           if i in imgs:
-            imgs[i] += 1
+            imgs[i] += n.weight
           else:
-            imgs[i] = 1
+            imgs[i] = n.weight
     return imgs
 
   def knn_search(self, feature, **kwargs):

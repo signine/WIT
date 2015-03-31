@@ -4,7 +4,8 @@ class ImgMatch():
     self.location = (img_data[1], img_data[2])
     self.img_id = img_data[0]
     self.street = img_data[3]
-    self.count = features  # Number of features that matched this img
+    self.count = features  # Sum of feature weights that matched this image
+
 
   def __str__(self):
     print self.img_data, self.count
